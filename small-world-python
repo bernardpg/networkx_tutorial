@@ -1,0 +1,72 @@
+import networkx as nx             #import networkx
+import matplotlib.pyplot as plt 
+import community
+G = nx.generators.random_graphs.newman_watts_strogatz_graph(100, 4, 0.5 ) #生成一small-world undirected  G
+nx.draw(G)                               #畫網絡G
+#plt.savefig("ba.png")           #输出方式1: to png
+plt.show()                      #输出方式2: show on the program
+print (G.nodes())               #print_node 
+partition = community.best_partition(G) #first-compute best partition
+H=nx.classes.function.degree(G) #degree-node 哪些邊有連結哪些點
+#print(H)
+k=nx.degree_assortativity_coefficient(G) #assortativity
+#print(k)
+u=nx.algorithms.centrality.closeness_centrality(G) #every-node-near-whole-graph-center
+#print(u)
+q=nx.algorithms.centrality.betweenness_centrality(G) #every-node-near-whole-graph-center
+#print(q)
+#e=nx.algorithms.cluster.clustering(G) #every-node-cc-coeffcient
+#print(e)
+e=nx.average_clustering(G)
+print("average_clustering")
+print(e)
+ge=nx.algorithms.global_efficiency(G) #global-efficiency
+print("global_efficiency")
+print(ge)
+le=nx.algorithms.local_efficiency(G) #local-efficiency
+print("local_efficiency")
+print(le)
+ts=nx.algorithms.cluster.transitivity(G)
+print("cluster_transitivity")
+print(ts)
+nbd=nx.average_neighbor_degree(G)
+#print("average_neighbor_degree")
+#print(nbd)
+##
+#degree-dis
+import collections
+degree_sequence = sorted([d for n, d in G.degree()], reverse=True)  # degree sequence
+degreeCount = collections.Counter(degree_sequence)
+deg, cnt = zip(*degreeCount.items())
+fig, ax = plt.subplots()
+plt.bar(deg, cnt, width=0.80, color='b')
+
+plt.title("Degree Histogram")
+plt.ylabel("Count")
+plt.xlabel("Degree")
+ax.set_xticks([d + 0.4 for d in deg])
+ax.set_xticklabels(deg)
+# draw graph in inset
+plt.axes([0.4, 0.4, 0.5, 0.5])
+Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)[0]
+pos = nx.spring_layout(G)
+plt.axis('off')
+nx.draw_networkx_nodes(G, pos, node_size=15)
+nx.draw_networkx_edges(G, pos, alpha=0.5)
+
+plt.show()
+#z-score & participation call other funciton
+#call motif
+
+#drawing
+size = float(len(set(partition.values())))
+pos = nx.spring_layout(G) #指定節點排列方式 用Fruchterman-Reingold算法排列　多中心狀
+count = 0.
+for com in set(partition.values()) :
+    count = count + 1.
+    list_nodes = [nodes for nodes in partition.keys()
+                                if partition[nodes] == com]
+    nx.draw_networkx_nodes(G, pos, list_nodes, node_size = 15, #30-node
+                                node_color = str(count / size))
+nx.draw_networkx_edges(G, pos, alpha=0.5)
+plt.show()
